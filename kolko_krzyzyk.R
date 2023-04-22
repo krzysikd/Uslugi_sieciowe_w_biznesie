@@ -20,3 +20,10 @@ wyswietl <- function(stan){
               stan[1], stan[2], stan[3], stan[4], stan[5], stan[6], stan[7], stan[8], stan[9]))
 }
 
+# Aktualizacja planszy
+aktualizacja <- function(stan, kto, pozycja){
+  nowy_stan <- replace(stan, pozycja, kto)
+  return(nowy_stan)
+}
+
+
