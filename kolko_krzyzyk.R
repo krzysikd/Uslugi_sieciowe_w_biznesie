@@ -13,3 +13,10 @@ trojka <- list(
   c(1,5,9),
   c(3,5,7)
 )
+
+# Wyœwietlanie planszy
+wyswietl <- function(stan){
+  cat(sprintf("\n %s | %s | %s \n ---+---+--- \n %s | %s | %s \n ---+---+--- \n %s | %s | %s \n", 
+              stan[1], stan[2], stan[3], stan[4], stan[5], stan[6], stan[7], stan[8], stan[9]))
+}
+
