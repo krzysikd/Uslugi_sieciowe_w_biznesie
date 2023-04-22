@@ -26,4 +26,9 @@ aktualizacja <- function(stan, kto, pozycja){
   return(nowy_stan)
 }
 
+# Sprawdzenie zwyciezcy
+check_winner <- function(stan) {
+  any(sapply(trojka, function(t) all(stan[t] == "x")) | 
+        sapply(trojka, function(t) all(stan[t] == "o")))
+}
 
