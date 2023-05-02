@@ -14,7 +14,7 @@ trojka <- list(
   c(3,5,7)
 )
 
-# Wyœwietlanie planszy
+# Wy?wietlanie planszy
 wyswietl <- function(stan){
   cat(sprintf("\n %s | %s | %s \n ---+---+--- \n %s | %s | %s \n ---+---+--- \n %s | %s | %s \n", 
               stan[1], stan[2], stan[3], stan[4], stan[5], stan[6], stan[7], stan[8], stan[9]))
@@ -47,13 +47,22 @@ tura_komputera <- function(stan) {
   
   for (i in 1:8) {
     if (sum(stan[trojka[[i]]] == komputer) == 2 && sum(stan[trojka[[i]]] == czlowiek) == 0) {  
-      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == komputer])            # Sprawdzenie, czy komputer moze wygrac
-      break
+      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == komputer])[1]            # Sprawdzenie, czy komputer moze wygrac
+      if (stan[pozycja] != "x" && stan[pozycja] != "o") {
+        break
+      }
     } else if (sum(stan[trojka[[i]]] == czlowiek) == 2 && sum(stan[trojka[[i]]] == komputer) == 0) {
-      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == czlowiek])                  # Sprawdzenie, czy trzeba zablokowac przeciwnika
+      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == czlowiek])[1]                  # Sprawdzenie, czy trzeba zablokowac przeciwnika
+      if (stan[pozycja] != "x" && stan[pozycja] != "o") {
+        break
+      }
     } else {
+      pozycja = sample(1:9, 1)
       while (stan[pozycja] == "x" || stan[pozycja] == "o") {
         pozycja = sample(1:9, 1)          # Wybor losowej pozycji
+      }
+      if (stan[pozycja] != "x" && stan[pozycja] != "o") {
+        break
       }
     }
   }
@@ -63,13 +72,14 @@ tura_komputera <- function(stan) {
   return(nowy_stan)
 }
 
-# Rozpoczêcie gry
+# RozpoczÄ™cie gry
 rozpocznij_gre <- function() {
   stan_poczatkowy = as.character(1:9)    # Wyswietlenie planszy
-  liczba_graczy = as.integer(readline(prompt = "Ilu bêdzie graczy? 1 czy 2: "))
+  liczba_graczy = as.integer(readline(prompt = "Ilu bÄ™dzie graczy? 1 czy 2: "))
   
   if (liczba_graczy == 1) {
-    kolejnosc = as.integer(readline(prompt = "Czy komputer ma graæ jako pierwszy, czy jako drugi? 1 czy 2: "))
+    kolejnosc = as.integer(readline(prompt = "Czy komputer ma graÄ‡ jako pierwszy, czy jako drugi? 1 czy 2: "))
+    symbol_czlowieka = ifelse(kolejnosc == 1, "o", "x")
     
     while (!zwyciezca(stan_poczatkowy)) {
       if (kolejnosc == 1) {
@@ -81,21 +91,21 @@ rozpocznij_gre <- function() {
         kolejnosc = 2
       } else {
         wyswietl(stan_poczatkowy)
-        pozycja = as.integer(readline(prompt = "Na której pozycji postawiæ 'o': "))
+        pozycja = as.integer(readline(prompt = sprintf("Na ktÃ³rej pozycji postawiÄ‡ '%s': ", symbol_czlowieka)))
         
         while (stan_poczatkowy[pozycja] == "x" || stan_poczatkowy[pozycja] == "o") {
-          pozycja = as.integer(readline(prompt = "To pole jest ju¿ zajête, wybierz inne: "))
+          pozycja = as.integer(readline(prompt = "To pole jest juÅ¼ zajÄ™te, wybierz inne: "))
         }
         
-        stan_poczatkowy = aktualizacja(stan_poczatkowy, "o", pozycja)
+        stan_poczatkowy = aktualizacja(stan_poczatkowy, symbol_czlowieka, pozycja)
         if (zwyciezca(stan_poczatkowy)) {
-          cat("Cz³owiek wygrywa! \n")
+          cat("CzÅ‚owiek wygrywa! \n")
           break
         }
         kolejnosc = 1
       }
       if (sum(stan_poczatkowy == "x") + sum(stan_poczatkowy == "o") == 9 && !zwyciezca(stan_poczatkowy)) {
-        cat("Gra zakoñczona remisem.\n")
+        cat("Gra zakoÅ„czona remisem.\n")
         break
       }
     }
@@ -103,9 +113,9 @@ rozpocznij_gre <- function() {
     while (!zwyciezca(stan_poczatkowy)) {
       for (gracz in c("x", "o")) {
         wyswietl(stan_poczatkowy)
-        pozycja = as.integer(readline(prompt = sprintf("Na której pozycji postawiæ '%s': ", gracz)))
+        pozycja = as.integer(readline(prompt = sprintf("Na ktÃ³rej pozycji postawiÄ‡ '%s': ", gracz)))
         while (stan_poczatkowy[pozycja] == "x" || stan_poczatkowy[pozycja] == "o") {
-          pozycja = as.integer(readline(prompt = "To pole jest ju¿ zajête, wybierz inne: "))
+          pozycja = as.integer(readline(prompt = "To pole jest juÅ¼ zajÄ™te, wybierz inne: "))
         }
         
         stan_poczatkowy = aktualizacja(stan_poczatkowy, gracz, pozycja)
@@ -116,7 +126,7 @@ rozpocznij_gre <- function() {
         }
         
         if (sum(stan_poczatkowy == "x") + sum(stan_poczatkowy == "o") == 9 && !zwyciezca(stan_poczatkowy)) {
-          cat("Gra zakoñczona remisem.\n")
+          cat("Gra zakoÅ„czona remisem.\n")
           break
         }
       }
@@ -129,3 +139,4 @@ rozpocznij_gre <- function() {
 }
 
 rozpocznij_gre()
+                
