@@ -34,6 +34,7 @@ zwyciezca <- function(stan) {
 
 # Tura komputera
 tura_komputera <- function(stan) {
+  # Sprawdzenie, czy komputer gra x czy o
   if (sum(stan == "x") == sum(stan == "o")) {
     komputer = "x"
     czlowiek = "o"
@@ -45,14 +46,14 @@ tura_komputera <- function(stan) {
   pozycja = sample(1:9, 1)
   
   for (i in 1:8) {
-    if (sum(stan[trojka[[i]]] == komputer) == 2 && sum(stan[trojka[[i]]] == czlowiek) == 0) {
-      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == komputer])
+    if (sum(stan[trojka[[i]]] == komputer) == 2 && sum(stan[trojka[[i]]] == czlowiek) == 0) {  
+      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == komputer])            # Sprawdzenie, czy komputer moze wygrac
       break
     } else if (sum(stan[trojka[[i]]] == czlowiek) == 2 && sum(stan[trojka[[i]]] == komputer) == 0) {
-      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == czlowiek])
+      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == czlowiek])                  # Sprawdzenie, czy trzeba zablokowac przeciwnika
     } else {
       while (stan[pozycja] == "x" || stan[pozycja] == "o") {
-        pozycja = sample(1:9, 1)
+        pozycja = sample(1:9, 1)          # Wybor losowej pozycji
       }
     }
   }
@@ -62,3 +63,69 @@ tura_komputera <- function(stan) {
   return(nowy_stan)
 }
 
+# Rozpoczêcie gry
+rozpocznij_gre <- function() {
+  stan_poczatkowy = as.character(1:9)    # Wyswietlenie planszy
+  liczba_graczy = as.integer(readline(prompt = "Ilu bêdzie graczy? 1 czy 2: "))
+  
+  if (liczba_graczy == 1) {
+    kolejnosc = as.integer(readline(prompt = "Czy komputer ma graæ jako pierwszy, czy jako drugi? 1 czy 2: "))
+    
+    while (!zwyciezca(stan_poczatkowy)) {
+      if (kolejnosc == 1) {
+        stan_poczatkowy = tura_komputera(stan_poczatkowy)
+        if (zwyciezca(stan_poczatkowy)) {
+          cat("Komputer wygrywa!\n")
+          break
+        }
+        kolejnosc = 2
+      } else {
+        wyswietl(stan_poczatkowy)
+        pozycja = as.integer(readline(prompt = "Na której pozycji postawiæ 'o': "))
+        
+        while (stan_poczatkowy[pozycja] == "x" || stan_poczatkowy[pozycja] == "o") {
+          pozycja = as.integer(readline(prompt = "To pole jest ju¿ zajête, wybierz inne: "))
+        }
+        
+        stan_poczatkowy = aktualizacja(stan_poczatkowy, "o", pozycja)
+        if (zwyciezca(stan_poczatkowy)) {
+          cat("Cz³owiek wygrywa! \n")
+          break
+        }
+        kolejnosc = 1
+      }
+      if (sum(stan_poczatkowy == "x") + sum(stan_poczatkowy == "o") == 9 && !zwyciezca(stan_poczatkowy)) {
+        cat("Gra zakoñczona remisem.\n")
+        break
+      }
+    }
+  } else if (liczba_graczy == 2) {
+    while (!zwyciezca(stan_poczatkowy)) {
+      for (gracz in c("x", "o")) {
+        wyswietl(stan_poczatkowy)
+        pozycja = as.integer(readline(prompt = sprintf("Na której pozycji postawiæ '%s': ", gracz)))
+        while (stan_poczatkowy[pozycja] == "x" || stan_poczatkowy[pozycja] == "o") {
+          pozycja = as.integer(readline(prompt = "To pole jest ju¿ zajête, wybierz inne: "))
+        }
+        
+        stan_poczatkowy = aktualizacja(stan_poczatkowy, gracz, pozycja)
+        
+        if (zwyciezca(stan_poczatkowy)) {
+          cat(sprintf("Gracz '%s' wygrywa!\n", gracz))
+          break
+        }
+        
+        if (sum(stan_poczatkowy == "x") + sum(stan_poczatkowy == "o") == 9 && !zwyciezca(stan_poczatkowy)) {
+          cat("Gra zakoñczona remisem.\n")
+          break
+        }
+      }
+      if (zwyciezca(stan_poczatkowy)) {
+        break
+      }
+    }
+  }
+  wyswietl(stan_poczatkowy)
+}
+
+rozpocznij_gre()
