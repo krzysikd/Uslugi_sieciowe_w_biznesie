@@ -27,8 +27,38 @@ aktualizacja <- function(stan, kto, pozycja){
 }
 
 # Sprawdzenie zwyciezcy
-check_winner <- function(stan) {
+zwyciezca <- function(stan) {
   any(sapply(trojka, function(t) all(stan[t] == "x")) | 
         sapply(trojka, function(t) all(stan[t] == "o")))
+}
+
+# Tura komputera
+tura_komputera <- function(stan) {
+  if (sum(stan == "x") == sum(stan == "o")) {
+    komputer = "x"
+    czlowiek = "o"
+  } else {
+    komputer = "o"
+    czlowiek = "x"
+  }
+  
+  pozycja = sample(1:9, 1)
+  
+  for (i in 1:8) {
+    if (sum(stan[trojka[[i]]] == komputer) == 2 && sum(stan[trojka[[i]]] == czlowiek) == 0) {
+      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == komputer])
+      break
+    } else if (sum(stan[trojka[[i]]] == czlowiek) == 2 && sum(stan[trojka[[i]]] == komputer) == 0) {
+      pozycja = setdiff(trojka[[i]], stan[trojka[[i]]][stan[trojka[[i]]] == czlowiek])
+    } else {
+      while (stan[pozycja] == "x" || stan[pozycja] == "o") {
+        pozycja = sample(1:9, 1)
+      }
+    }
+  }
+  
+  nowy_stan = aktualizacja(stan, komputer, pozycja)
+  cat(komputer, "gra na pozycji", pozycja, "\n")
+  return(nowy_stan)
 }
 
